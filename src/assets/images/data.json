@@ -1,0 +1,236 @@
+{
+    "minJingPrTop": [
+        {
+            "userName": "王磊",
+            "deptName": "望海楼派出所",
+            "count": 4
+        },
+        {
+            "userName": "刘兵",
+            "deptName": "铁东路派出所",
+            "count": 3
+        },
+        {
+            "userName": "张磊",
+            "deptName": "光复道派出所",
+            "count": 3
+        },
+        {
+            "userName": "梁才斌",
+            "deptName": "建昌道派出所",
+            "count": 3
+        },
+        {
+            "userName": "封世杰",
+            "deptName": "光复道派出所",
+            "count": 2
+        },
+        {
+            "userName": "张曦",
+            "deptName": "新开河派出所",
+            "count": 2
+        },
+        {
+            "userName": "王言博",
+            "deptName": "鸿顺里派出所",
+            "count": 2
+        },
+        {
+            "userName": "陈贵州",
+            "deptName": "鸿顺里派出所",
+            "count": 1
+        },
+        {
+            "userName": "张堡富",
+            "deptName": "宁园街派出所",
+            "count": 1
+        },
+        {
+            "userName": "宋存喜",
+            "deptName": "月牙河派出所",
+            "count": 1
+        }
+    ],
+    "fuJingPrTop": [],
+    "deptPrCount": {
+        "allPr": 89,
+        "jcPr": 68,
+        "zcPr": 21
+    },
+    "pcsAllPrTop": [
+        {
+            "name": "墙子",
+            "count": 3
+        },
+        {
+            "name": "光复道",
+            "count": 5
+        },
+        {
+            "name": "望海楼",
+            "count": 5
+        },
+        {
+            "name": "鸿顺里",
+            "count": 8
+        },
+        {
+            "name": "新开河",
+            "count": 4
+        },
+        {
+            "name": "月牙河",
+            "count": 5
+        },
+        {
+            "name": "宁园街",
+            "count": 5
+        },
+        {
+            "name": "江都路",
+            "count": 4
+        },
+        {
+            "name": "建昌道",
+            "count": 5
+        },
+        {
+            "name": "铁东路",
+            "count": 6
+        }
+    ],
+    "pcsZCPrTop": [
+        {
+            "name": "墙子",
+            "count": 3
+        },
+        {
+            "name": "光复道",
+            "count": 1
+        },
+        {
+            "name": "望海楼",
+            "count": 1
+        },
+        {
+            "name": "鸿顺里",
+            "count": 3
+        },
+        {
+            "name": "新开河",
+            "count": 2
+        },
+        {
+            "name": "月牙河",
+            "count": 1
+        },
+        {
+            "name": "宁园街",
+            "count": 1
+        },
+        {
+            "name": "江都路",
+            "count": 2
+        },
+        {
+            "name": "建昌道",
+            "count": 2
+        },
+        {
+            "name": "铁东路",
+            "count": 1
+        }
+    ],
+    "prTypeTop": [
+        {
+            "name": "指挥室",
+            "count": 8
+        },
+        {
+            "name": "政治处",
+            "count": 7
+        },
+        {
+            "name": "督审",
+            "count": 12
+        },
+        {
+            "name": "纪委办",
+            "count": 7
+        },
+        {
+            "name": "警保室",
+            "count": 3
+        },
+        {
+            "name": "治安",
+            "count": 6
+        },
+        {
+            "name": "法制",
+            "count": 5
+        },
+        {
+            "name": "国保",
+            "count": 7
+        },
+        {
+            "name": "打侦",
+            "count": 3
+        },
+        {
+            "name": "网安",
+            "count": 4
+        },
+        {
+            "name": "科信",
+            "count": 6
+        }
+    ],
+    "prStatusCount": [
+        {
+            "type": "全部问题",
+            "unFeedCount": 26,
+            "feedCount": 63,
+            "allCount": 89
+        },
+        {
+            "type": "分局检查",
+            "unFeedCount": 13,
+            "feedCount": 55,
+            "allCount": 68
+        },
+        {
+            "type": "各单位自查",
+            "unFeedCount": 4,
+            "feedCount": 17,
+            "allCount": 21
+        }
+    ],
+    "prTypeStatusCount": [
+        {
+            "name": "提醒教育",
+            "count": 20
+        },
+        {
+            "name": "提醒谈话",
+            "count": 3
+        },
+        {
+            "name": "批评教育",
+            "count": 2
+        },
+        {
+            "name": "警示谈话",
+            "count": 0
+        },
+        {
+            "name": "诫勉",
+            "count": 0
+        },
+        {
+            "name": "其他",
+            "count": 0
+        }
+    ]
+}
