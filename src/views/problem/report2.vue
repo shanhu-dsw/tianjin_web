@@ -9,6 +9,22 @@
           >
             <span style="font-weight: bold; color: #016dbe">督察报告</span>
             <div class="pull-right">
+              <span style="font-size: 14px;">派出所：</span>
+              <el-select
+                v-model="department_uuid"
+                placeholder="被选择检查问题单位"
+                @change="deptSelChange($event)"
+                filterable
+              >
+                <el-option
+                  v-for="item in deptList"
+                  :key="item.uuid"
+                  :label="item.name"
+                  :value="item.uuid"
+                />
+              </el-select>
+            </div>
+            <div class="pull-right">
               <span style="font-size: 14px;">时间范围：</span>
               <el-date-picker
                 size="small"
@@ -25,9 +41,10 @@
               </el-date-picker>
 
             </div>
+
           </div>
 
-          <el-row style="height:200px">
+          <el-row style="height:220px">
             <el-col
               :span="4"
               class="report-item"
@@ -100,6 +117,19 @@
               <span class="txt">问题高发人员统计报告</span>
 
             </el-col>
+            <el-col
+              :span="4"
+              class="report-item"
+              @click.native="openReport(7)"
+              style="padding-top:20px"
+            >
+              <img
+                class="img"
+                :src="word"
+              />
+              <span class="txt">派出所自查和监督检查情况报告</span>
+
+            </el-col>
           </el-row>
         </el-card>
       </el-col>
@@ -109,7 +139,7 @@
 </template>
 
 <script>
-import { getReportFile } from "@/api/problem";
+import { getReportFile, getDepartment } from "@/api/problem";
 import { saveAs } from "file-saver";
 
 export default {
@@ -148,7 +178,19 @@ export default {
           },
         ],
       },
+      department_uuid: "",
+      department_name: "",
+      deptList: [],
     };
+  },
+  mounted() {
+    getDepartment({
+      level: "2",
+    }).then((resp) => {
+      console.log(resp.array);
+      this.deptList = resp.array.filter((item) => item.type_name == "派出所");
+      console.log(this.deptList);
+    });
   },
   methods: {
     openReport(type) {
@@ -156,7 +198,10 @@ export default {
         this.$modal.msgError("请先选择报表的时间范围!");
         return;
       }
-
+      if (type == 7 && !this.department_uuid) {
+        this.$modal.msgError("请先选择派出所!");
+        return;
+      }
       this.$modal.loading("正在生成报告...");
 
       this.curReportType = type;
@@ -187,6 +232,10 @@ export default {
           url = "getGaoFaRenYuan";
           tip = "问题高发人员统计报告";
           break;
+        case 7:
+          url = "getPaiChuSuo";
+          tip = "派出所自查和监督检查情况报告";
+          break;
       }
       var that = this;
 
@@ -208,7 +257,10 @@ export default {
         this.parseTime(this.dateRange[0], "{y}-{m}-{d}") + " 00:00:00";
       query.end_datetime =
         this.parseTime(this.dateRange[1], "{y}-{m}-{d}") + " 23:59:59";
-
+      if (this.curReportType == 7) {
+        query.department_uuid = this.department_uuid;
+        query.department_name = this.department_name;
+      }
       getReportFile(url, query).then((resp) => {
         console.log(resp.file_name);
         var filePath =
@@ -217,6 +269,14 @@ export default {
           resp.file_name;
         saveAs(filePath, tip + ".docx");
       });
+    },
+    deptSelChange(e) {
+      console.log(e);
+      this.department_uuid = e;
+      console.log(this.deptList);
+      this.department_name = this.deptList.filter(
+        (item) => item.uuid == this.department_uuid
+      )[0].name;
     },
   },
 };

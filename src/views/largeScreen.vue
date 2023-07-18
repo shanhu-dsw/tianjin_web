@@ -198,21 +198,12 @@
             <div class="item-title">问题追责问责情况</div>
             <div class="item-content">
               <div
-                v-for="(item, index) in data.prTypeStatusCount"
+                v-for="(item, index) in wzList"
                 v-bind:key="index"
                 class="child2"
               >
-                <span style="width: 90px">{{ item.name }}</span>
-                <div style="flex: 1; margin-right: 10px">
-                  <el-progress
-                    size="small"
-                    :define-back-color="'#1855ac'"
-                    :show-text="false"
-                    :stroke-width="15"
-                    :percentage="0"
-                  ></el-progress>
-                </div>
-                <span style="width: 30px">0</span>
+                <div style="flex: 1;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;">{{ item.accountable_type }}</div>
+                <span style="width: 30px">{{ item.accountable_count }}</span>
               </div>
             </div>
           </div>
@@ -234,6 +225,7 @@ import {
   getProblemByPolice,
   getProblemByLv2,
   getProblemByPoliceFast,
+  getAccountableStatistics,
 } from "@/api/problem";
 
 export default {
@@ -262,6 +254,8 @@ export default {
       model1: "民警",
       img1: require("../assets/images/logo.png"),
       data: require("../assets/images/data.json"),
+
+      wzList: [],
       timer: null,
       curTime: "",
 
@@ -507,6 +501,10 @@ export default {
           console.log(this.rtList1);
           console.log(this.rtList3);
         }
+      });
+      getAccountableStatistics(query).then((resp) => {
+        console.log(resp);
+        this.wzList = resp.array;
       });
     },
 
@@ -825,7 +823,7 @@ export default {
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-bottom: 20px;
+        margin-bottom: 5px;
         .el-progress-bar__inner {
           background-image: linear-gradient(
             90deg,

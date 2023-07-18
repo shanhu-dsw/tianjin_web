@@ -20,6 +20,7 @@ const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API,
   // 超时
   timeout: 60 * 1000,
+  withCredentials: false
 })
 
 // request拦截器

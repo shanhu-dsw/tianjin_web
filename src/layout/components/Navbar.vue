@@ -55,6 +55,13 @@
               </div>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item
+                  @click.native="gotoZZWZ"
+                  v-if="checkZZWZ()"
+                >
+                  <span>追责问责</span>
+                </el-dropdown-item>
+
+                <el-dropdown-item
                   @click.native="gotoScreen"
                   v-if="checkScreen()"
                 >
@@ -386,6 +393,10 @@ export default {
       this.$router.push("/problem/user");
     },
 
+    gotoZZWZ() {
+      this.$router.push("/problem/zzwzList");
+    },
+
     gotoScreen() {
       this.$router.push("/screen");
     },
@@ -417,6 +428,13 @@ export default {
     },
 
     gotoReport() {
+      if (
+        this.admin.role_name == "fu_jing" ||
+        this.admin.role_name == "min_jing"
+      ) {
+        this.$modal.msgError("您无此权限!");
+        return;
+      }
       this.$router.push("/problem/report");
     },
 
@@ -518,8 +536,32 @@ export default {
       ) {
         return true;
       } else if (
-        this.admin.department_uuid2_name == "政治处" &&
+        (this.admin.department_uuid2_name == "政治处" ||
+          this.admin.department_uuid2_name ==
+            "天津市公安局河北分局 / 政治处") &&
         this.admin.role_name != "fu_jing"
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    checkZZWZ() {
+      if (
+        this.admin.role_name == "superadmin" ||
+        this.admin.role_name == "admin" ||
+        (this.admin.role_name == "ds_admin" &&
+          ((this.admin.department_uuid2_name.indexOf("督察审计支队") != -1 &&
+            this.admin.full_name.indexOf("督察审计支队二大队") == -1) ||
+            this.admin.department_uuid2_type == "分局"))
+      ) {
+        return true;
+      } else if (
+        (this.admin.department_uuid2_name == "政治处" ||
+          this.admin.department_uuid2_name ==
+            "天津市公安局河北分局 / 政治处") &&
+        this.admin.role_name == "zd_leader"
       ) {
         return true;
       } else {

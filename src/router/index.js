@@ -145,6 +145,11 @@ export const constantRoutes = [
         component: () => import('@/views/problem/oldList'),
         name: 'oldList',
       },
+      {
+        path: 'zzwzList',
+        component: () => import('@/views/problem/zzwzList'),
+        name: 'zzwzList',
+      },
     ]
   }
 ]

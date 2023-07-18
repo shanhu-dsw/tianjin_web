@@ -94,6 +94,13 @@ export default {
             axisLabel: {
               interval: 0,
               rotate: 45, //倾斜度 -90 至 90 默认为0
+              formatter: function (params) {
+                var label = params;
+                if (label.length > 5) {
+                  label = label.slice(0, 5) + "....";
+                }
+                return label;
+              },
             },
           },
         ],
@@ -115,8 +122,9 @@ export default {
             itemStyle: {
               normal: {
                 label: {
-                  show: true, //开启显示
-                  position: "top", //在上方显示
+                  show: false, //开启显示
+                  position: "bottom", //在上方显示
+
                   // textStyle: {
                   //   //数值样式
                   //   color: "#fff",

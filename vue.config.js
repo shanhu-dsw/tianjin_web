@@ -51,7 +51,7 @@ module.exports = {
         }
       }
     },
-    disableHostCheck: true
+    disableHostCheck: false
   },
   css: {
     loaderOptions: {

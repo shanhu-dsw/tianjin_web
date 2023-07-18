@@ -734,14 +734,14 @@ export default {
 
       rtStatus1: "",
       dateRange1: [
-        new Date() - 3600 * 1000 * 24 * 7,
-        new Date() - 3600 * 1000 * 24,
+        // new Date() - 3600 * 1000 * 24 * 7,
+        // new Date() - 3600 * 1000 * 24,
       ],
       rtList1: [],
 
       dateRange2: [
-        new Date() - 3600 * 1000 * 24 * 7,
-        new Date() - 3600 * 1000 * 24,
+        // new Date() - 3600 * 1000 * 24 * 7,
+        // new Date() - 3600 * 1000 * 24,
       ],
       rtList2: {
         xData: [],
@@ -750,14 +750,14 @@ export default {
       },
 
       dateRange3: [
-        new Date() - 3600 * 1000 * 24 * 7,
-        new Date() - 3600 * 1000 * 24,
+        // new Date() - 3600 * 1000 * 24 * 7,
+        // new Date() - 3600 * 1000 * 24,
       ],
       rtList3: [],
 
       dateRange4: [
-        new Date() - 3600 * 1000 * 24 * 7,
-        new Date() - 3600 * 1000 * 24,
+        // new Date() - 3600 * 1000 * 24 * 7,
+        // new Date() - 3600 * 1000 * 24,
       ],
       rtList4: {
         xData: [],
@@ -768,8 +768,8 @@ export default {
 
       dataType: 1,
       dateRange6: [
-        new Date() - 3600 * 1000 * 24 * 7,
-        new Date() - 3600 * 1000 * 24,
+        // new Date() - 3600 * 1000 * 24 * 7,
+        // new Date() - 3600 * 1000 * 24,
       ],
       rtList6: {
         xData: [],
@@ -783,14 +783,14 @@ export default {
       rank: "",
 
       dateRange11: [
-        new Date() - 3600 * 1000 * 24 * 7,
-        new Date() - 3600 * 1000 * 24,
+        // new Date() - 3600 * 1000 * 24 * 7,
+        // new Date() - 3600 * 1000 * 24,
       ],
       rtList11: [],
 
       dateRange12: [
-        new Date() - 3600 * 1000 * 24 * 7,
-        new Date() - 3600 * 1000 * 24,
+        // new Date() - 3600 * 1000 * 24 * 7,
+        // new Date() - 3600 * 1000 * 24,
       ],
       rtList12: [],
     };
@@ -965,7 +965,7 @@ export default {
         const query = {
           level: 2,
         };
-        if (this.dateRange1) {
+        if (this.dateRange1.length > 0) {
           query.start_create_datetime =
             this.parseTime(this.dateRange1[0], "{y}-{m}-{d}") + " 00:00:00";
           query.end_create_datetime =
@@ -991,7 +991,7 @@ export default {
       const query = {
         level: 2,
       };
-      if (this.dateRange2) {
+      if (this.dateRange2.length > 0) {
         query.start_create_datetime =
           this.parseTime(this.dateRange2[0], "{y}-{m}-{d}") + " 00:00:00";
         query.end_create_datetime =
@@ -1021,7 +1021,7 @@ export default {
         level: 2,
         order_group: "002",
       };
-      if (this.dateRange11) {
+      if (this.dateRange11.length > 0) {
         query.start_create_datetime =
           this.parseTime(this.dateRange11[0], "{y}-{m}-{d}") + " 00:00:00";
         query.end_create_datetime =
@@ -1043,7 +1043,7 @@ export default {
 
     getReport12() {
       const query = {};
-      if (this.dateRange11) {
+      if (this.dateRange11.length > 0) {
         query.start_create_datetime =
           this.parseTime(this.dateRange12[0], "{y}-{m}-{d}") + " 00:00:00";
         query.end_create_datetime =
@@ -1088,7 +1088,7 @@ export default {
     getReport3() {
       return new Promise((resolve) => {
         const query = {};
-        if (this.dateRange3) {
+        if (this.dateRange3.length > 0) {
           query.start_create_datetime =
             this.parseTime(this.dateRange3[0], "{y}-{m}-{d}") + " 00:00:00";
           query.end_create_datetime =
@@ -1103,17 +1103,25 @@ export default {
             (item) => item.level == 2 && item.problem_count > 0
           );
           this.rtList3 = [...arrays].map((item) => {
+            if (item.order_group.slice(0, 3) == "001") {
+              item.name = item.name + "(检查问题)";
+            } else {
+              item.name = item.name + "(自查问题)";
+            }
             let obj = {
               name: item.name,
               value: item.problem_count,
             };
+            console.log(obj);
             return obj;
           });
+          this.rtList3.sort((a, b) => b.value - a.value);
+          this.rtList3 = this.rtList3.slice(0, 5);
+          console.log(this.rtList3);
           resolve("next");
         });
       });
     },
-
     getReport4(skip) {
       const query = {};
       if (this.dateRange4) {
@@ -1133,6 +1141,13 @@ export default {
         getProblemDepartmentTypeCount(query).then((resp) => {
           var arrays = resp.array.filter((item) => item.level == 2);
           arrays = arrays.sort(this.sortBy("problem_count")).slice(0, 10);
+          arrays.map((item) => {
+            if (item.order_group.slice(0, 3) == "001") {
+              item.name = item.name + "(检查问题)";
+            } else {
+              item.name = item.name + "(自查问题)";
+            }
+          });
           this.rtList4.xData = arrays.map((item) => item.name);
           this.rtList4.yData = arrays.map((item) => item.problem_count);
         });
@@ -1153,7 +1168,7 @@ export default {
 
     getReport6() {
       const query = {};
-      if (this.dateRange3) {
+      if (this.dateRange3.length > 0) {
         query.start_create_datetime =
           this.parseTime(this.dateRange6[0], "{y}-{m}-{d}") + " 00:00:00";
         query.end_create_datetime =

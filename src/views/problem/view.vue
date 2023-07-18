@@ -36,7 +36,7 @@
                 type="warning"
                 effect="dark"
                 size="small"
-              >未反馈</el-tag>
+              >未确认</el-tag>
               <el-tag
                 v-if="modelPr.status == 'FEEDBACK'"
                 type="success"
@@ -102,7 +102,10 @@
             {{htmlDecode(modelPr.content)}}
           </div>
 
-          <div class="content-row small">
+          <div
+            class="content-row small"
+            v-if="modelPr.storage_file == []"
+          >
             <div class="content-col">
               <div class="content-title">问题附件:</div>
             </div>
@@ -154,16 +157,16 @@
           <div class="content-row">
             <div class="content-col">
               <div class="content-title1">该问题于【</div>{{modelFb.last_update_datetime}} <div class="content-title1">】被【</div>{{ modelFb.from_admin_array[0].real_name }}（{{modelFb.from_admin_array[0].name}}）<div class="content-title1">】反馈为</div>
-              <el-tag
+              <!-- <el-tag
                 v-if="modelPr.is_fact == 'UN_CONFIR'"
                 type="info"
                 effect="dark"
-              >未确认</el-tag>
+              >未反馈</el-tag> -->
               <el-tag
                 v-if="modelPr.is_fact == 'NOT_FACT'"
                 type="warning"
                 effect="dark"
-              >失实</el-tag>
+              >不属实</el-tag>
               <el-tag
                 v-if="modelPr.is_fact == 'FACT'"
                 type="success"
@@ -181,7 +184,10 @@
             {{htmlDecode(modelFb.content)}}
           </div>
 
-          <div class="content-row small">
+          <div
+            class="content-row small"
+            v-if="modelFb.storage_file.length > 0"
+          >
             <div class="content-col">
               <div class="content-title1">问题附件:</div>
             </div>
@@ -242,8 +248,59 @@
               <div class="content-title1">问题已存在反馈信息，点击”</div><el-link
                 type="primary"
                 @click="openFbEidt"
-              >编辑问题</el-link>
+              >编辑反馈</el-link>
               <div class="content-title1">”开始编辑反馈信息!</div>
+            </div>
+          </div>
+
+        </el-row>
+
+        <el-row
+          class="content"
+          v-if="problemComment.length > 0"
+        >
+          <div
+            class="content-row small"
+            style="margin:10px 0 20px 0"
+          >
+            <div class="content-col">
+              <div class="content-title1">评论:</div>
+            </div>
+          </div>
+
+          <div class="block">
+            <el-timeline>
+              <el-timeline-item
+                v-for="item in problemComment"
+                :key="item.uuid"
+                :timestamp="item.author_real_name + '（' + item.author_name + '）' + '于' + item.create_datetime + '发布了一条类型为‘'+ item.status +'’的评论,内容如下' "
+                placement="top"
+              >
+                <el-card>
+                  <i
+                    v-if="item.author_uuid == admin.uuid"
+                    class="el-icon-close"
+                    style="display: inline-block;float: right;margin-top: 5px;"
+                    @click="delComment(item.uuid)"
+                  ></i>
+                  <p style="word-wrap: break-word;">{{ item.content }}</p>
+                </el-card>
+              </el-timeline-item>
+            </el-timeline>
+          </div>
+        </el-row>
+
+        <el-row
+          class="content"
+          v-if="isFeedBack && !fbDisabled"
+        >
+          <div class="content-row">
+            <div class="content-col">
+              <div class="content-title1">如果对反馈信息有异议请，点击”</div><el-link
+                type="primary"
+                @click="openPLEidt"
+              >评论</el-link>
+              <div class="content-title1">”开始编辑评论信息!</div>
             </div>
           </div>
         </el-row>
@@ -258,6 +315,13 @@
             </div>
           </div>
         </el-row>
+
+        <!-- <el-row
+          class="content"
+          v-if="isFeedBack && !fbDisabled"
+        >
+          
+        </el-row> -->
 
       </div>
 
@@ -475,13 +539,15 @@
         </el-form-item>
 
         <el-form-item label="属实情况">
-          <el-radio
+
+          <!-- <el-radio
             v-model="formFb.is_fact"
-            label="NOT_FACT"
+            label="UN_CONFIR"
           > <el-tag
-              type="warning"
+              type="info"
               effect="dark"
-            >失实</el-tag></el-radio>
+            >未反馈</el-tag></el-radio> -->
+
           <el-radio
             v-model="formFb.is_fact"
             label="FACT"
@@ -489,6 +555,14 @@
               type="success"
               effect="dark"
             >属实</el-tag></el-radio>
+
+          <el-radio
+            v-model="formFb.is_fact"
+            label="NOT_FACT"
+          > <el-tag
+              type="warning"
+              effect="dark"
+            >不属实</el-tag></el-radio>
 
         </el-form-item>
 
@@ -551,6 +625,63 @@
       </div>
     </el-dialog>
 
+    <el-dialog
+      title="评论"
+      :visible.sync="openPL"
+      width="800px"
+      append-to-body
+      :close-on-click-modal="false"
+    >
+
+      <el-form
+        ref="formPL"
+        :model="formPL"
+        :rules="rulesPL"
+        label-width="100px"
+      >
+        <el-form-item label="评论状态">
+
+          <el-radio
+            v-model="formPL.status"
+            label="已解决"
+          > <el-tag
+              type="success"
+              effect="dark"
+            >已解决</el-tag></el-radio>
+
+          <el-radio
+            v-model="formPL.status"
+            label="未解决"
+          > <el-tag
+              type="warning"
+              effect="dark"
+            >未解决</el-tag></el-radio>
+
+        </el-form-item>
+        <el-form-item label="内容">
+          <el-input
+            type="textarea"
+            rows="5"
+            placeholder="请输入内容"
+            v-model="formPL.content"
+            maxlength="5000"
+            show-word-limit
+          >
+          </el-input>
+        </el-form-item>
+      </el-form>
+      <div
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button
+          type="primary"
+          @click="submitPL"
+        >确 定</el-button>
+        <el-button @click="colsePr">取 消</el-button>
+      </div>
+    </el-dialog>
+
     <el-image-viewer
       v-if="imgViewerVisible"
       :on-close="closeImgViewer"
@@ -574,6 +705,9 @@ import {
   addStorageFileBatch,
   getAdminShort,
   addMessage,
+  addComment,
+  getComment,
+  removeComment,
 } from "@/api/problem";
 import { resolve } from "path";
 export default {
@@ -592,10 +726,11 @@ export default {
       problemType1: [],
       problemType2: [],
       problemList: [],
+      problemComment: [],
 
       openPr: false,
       openFb: false,
-
+      openPL: false,
       title: "",
 
       rulesPr: {
@@ -626,6 +761,16 @@ export default {
         ],
       },
 
+      rulesPL: {
+        title: [{ required: true, message: "标题不能为空", trigger: "change" }],
+        status: [
+          { required: true, message: "评论状态不能为空", trigger: "change" },
+        ],
+        content: [
+          { required: true, message: "内容不能为空", trigger: "change" },
+        ],
+      },
+
       beforeUpdateImg: [],
       beforeUpdateImg2: [],
       modelPr: {},
@@ -643,6 +788,15 @@ export default {
         is_fact: "",
         storage_file: [],
         content: "",
+      },
+
+      formPL: {
+        status: "已解决",
+        content: "",
+        problem_uuid: "",
+        author_uuid: "",
+        author_name: "",
+        author_real_name: "",
       },
 
       problemNumber: "",
@@ -754,6 +908,7 @@ export default {
       getProblemExact(query).then((resp) => {
         if (resp.array.length > 0) {
           this.modelPr = resp.array[0];
+          this.getComment(resp.array[0].uuid);
 
           if (this.modelPr.status == "FILED") {
             this.fbDisabled = true;
@@ -761,7 +916,7 @@ export default {
           }
 
           if (this.admin.role_name == "zd_admin") {
-            this.fbDisabled = true;
+            this.fbDisabled = false;
             if (this.admin.uuid != this.modelPr.from_uuid) {
               this.prDisabled = true;
             }
@@ -825,6 +980,8 @@ export default {
           this.getDeptProblemTypeList();
           this.getProblemFeedBack();
           this.getManager();
+        } else {
+          this.$modal.msgError("问题不存在");
         }
       });
     },
@@ -871,6 +1028,18 @@ export default {
       });
     },
 
+    getComment(uuid) {
+      console.log(uuid);
+      const request = {
+        problem_uuid: uuid,
+        offset: 0,
+        rows: 100,
+      };
+      getComment(request).then((res) => {
+        this.problemComment = res.array;
+      });
+    },
+
     getManager() {
       const query = {
         offset: 0,
@@ -883,10 +1052,7 @@ export default {
     },
 
     checkRole() {
-      if (
-        this.admin.role_name == "fu_jing" ||
-        this.admin.role_name == "min_jing"
-      ) {
+      if (this.admin.role_name == "fu_jing") {
         this.prDisabled = true;
         this.fbDisabled = true;
       }
@@ -912,6 +1078,8 @@ export default {
       Object.assign(this.formPr, this.modelPr);
       this.formPr.content = this.htmlDecode(this.formPr.content);
       this.problemType1.forEach((item) => {
+        console.log(item.name);
+        console.log(this.modelPr.problem_department_type_parent_name);
         if (item.name == this.modelPr.problem_department_type_parent_name) {
           this.formPr.problem_type = item.uuid;
         }
@@ -969,6 +1137,17 @@ export default {
               that.getProblemInfo();
               that.openPr = false;
             });
+            console.log(this.modelPr);
+          }
+          if (this.modelPr.status == "UN_FEEDBACK") {
+            const request = {
+              uuid: this.modelPr.uuid,
+              status: "FEEDBACK",
+            };
+            editProblem(request).then((res) => {
+              this.getProblemInfo();
+              that.openPr = false;
+            });
           }
         }
       });
@@ -978,6 +1157,51 @@ export default {
       this.getProblemInfo();
       this.openPr = false;
       this.openFb = false;
+      this.openPL = false;
+    },
+
+    submitPL() {
+      this.formPL.content = this.htmlEncode(this.formPL.content);
+      this.formPL.problem_uuid = this.modelPr.uuid;
+      this.formPL.author_uuid = this.admin.uuid;
+      this.formPL.author_name = this.admin.name;
+      this.formPL.author_real_name = this.admin.real_name;
+      console.log(this.modelPr.uuid);
+      this.$refs["formPL"].validate((valid) => {
+        if (valid) {
+          addComment(this.formPL).then((res) => {
+            this.$modal.msgSuccess("评论成功");
+            this.getProblemInfo();
+            this.openPL = false;
+            if (this.formPL.status == "未解决") {
+              const request = {
+                uuid: this.modelPr.uuid,
+                status: "UN_FEEDBACK",
+              };
+              editProblem(request).then((res) => {
+                this.getProblemInfo();
+              });
+            } else {
+              const request = {
+                uuid: this.modelPr.uuid,
+                status: "FEEDBACK",
+              };
+              editProblem(request).then((res) => {
+                this.getProblemInfo();
+              });
+            }
+          });
+        }
+      });
+    },
+
+    delComment(uuid) {
+      this.$modal.confirm("是否确认删除该评论").then(() => {
+        removeComment({ uuid: uuid }).then((res) => {
+          this.$modal.msgSuccess("删除成功");
+          this.getProblemInfo();
+        });
+      });
     },
 
     remotePerson1(query) {
@@ -1001,11 +1225,41 @@ export default {
       this.formFb.photos = [];
 
       if (this.isFeedBack) {
-        this.formFb.content = this.modelFb.content;
         this.formFb.content = this.htmlDecode(this.modelFb.content);
         this.formFb.storage_file = this.modelFb.storage_file;
         this.formFb.is_fact = this.modelPr.is_fact;
         this.title = "修改反馈";
+
+        var factText = "";
+        if (this.modelPr.is_fact == "NOT_FACT") {
+          factText = "不属实";
+        } else if (this.modelPr.is_fact == "FACT") {
+          factText = "属实";
+        }
+
+        var resName = "无";
+        if (
+          this.modelPr.responsible_uuid &&
+          this.modelPr.responsible_uuid.length > 0
+        ) {
+          resName = this.modelPr.responsible_real_name.join(";");
+        }
+
+        this.formFb.content =
+          "\n=====================================================================\n" +
+          "history:【该问题于" +
+          this.modelFb.last_update_datetime +
+          "被" +
+          this.modelFb.from_admin_array[0].real_name +
+          "(" +
+          this.modelFb.from_admin_array[0].name +
+          ")反馈为" +
+          factText +
+          "，指定了问题责任人" +
+          resName +
+          "，描述为`" +
+          this.formFb.content +
+          "`】。";
       } else {
         this.title = "问题反馈";
         this.formFb.is_fact = "FACT";
@@ -1034,6 +1288,19 @@ export default {
         this.openFb = true;
         console.log(this.formFb);
       });
+    },
+
+    openPLEidt() {
+      this.openPL = true;
+      this.formPL = {
+        title: "",
+        status: "已解决",
+        content: "",
+        problem_uuid: "",
+        author_uuid: "",
+        author_name: "",
+        author_real_name: "",
+      };
     },
 
     submitFb() {
@@ -1230,10 +1497,11 @@ export default {
   flex: 1;
   color: #545454;
   padding: 10px;
+  width: 80%;
 
   .prHeader {
     .number {
-      width: 170px;
+      width: 15%;
       height: 160px;
       color: #fff;
       background: linear-gradient(135deg, #ff1651, #ff7c35);
@@ -1249,7 +1517,7 @@ export default {
       margin-top: 40px;
       margin-left: 20px;
       font-size: 10px;
-
+      width: 85%;
       .desc {
         font-size: 18px;
         font-weight: bold;
@@ -1338,6 +1606,7 @@ export default {
       padding: 15px 10px;
       margin-bottom: 18px;
       border: 1px solid #eeeeee;
+      word-wrap: break-word;
     }
 
     .content-desc1 {
@@ -1345,12 +1614,14 @@ export default {
       padding: 15px 10px;
       margin-bottom: 18px;
       border: 1px solid #eeeeee;
+      white-space: pre-wrap;
+      word-wrap: break-word;
     }
   }
 }
 
 .prOper {
-  width: 220px;
+  width: 20%;
   font-size: 20px;
   text-align: right;
   padding-right: 10px;

@@ -431,7 +431,7 @@ export default {
       return new Promise((resolve) => {
         getProblemDepartmentType().then((resp) => {
           this.problemType2 = resp.array;
-
+          console.log(resp.array);
           if (
             this.admin.role_name == "superadmin" ||
             this.admin.role_name == "admin" ||
@@ -502,7 +502,7 @@ export default {
 
     deptTypeSelChange(e) {
       this.form.dept_uuid_type = e;
-
+      console.log(this.deptList0);
       this.deptList2 = this.deptList0.filter((item) => item.type_name == e);
 
       if (this.form.problem_type == "CHECK") {
@@ -540,17 +540,39 @@ export default {
       if (this.admin.department_uuid2_type == "分局") {
         if (e == "CHECK") {
           this.problemType3 = this.adminProblemType.CHECK;
+          console.log(this.problemType3);
+          this.problemType3.forEach((item) => {
+            item.name = item.name.replace(/u201c/g, "“");
+            item.name = item.name.replace(/u201d/g, "”");
+            item.name = item.name.replace(/u2014/g, "-");
+          });
         }
       } else if (this.admin.department_uuid2_type == "派出所") {
         if (e == "SELF") {
           this.problemType3 = this.adminProblemType.SELF;
+          console.log(this.problemType3);
+          this.problemType3.forEach((item) => {
+            item.name = item.name.replace(/u201c/g, "“");
+            item.name = item.name.replace(/u201d/g, "”");
+            item.name = item.name.replace(/u2014/g, "-");
+          });
         }
       } else if (this.admin.role_name == "zd_admin") {
         if (e == "CHECK") {
           this.problemType3 = this.adminProblemType.CHECK;
+          this.problemType3.forEach((item) => {
+            item.name = item.name.replace(/u201c/g, "“");
+            item.name = item.name.replace(/u201d/g, "”");
+            item.name = item.name.replace(/u2014/g, "-");
+          });
         }
       } else {
         this.problemType3 = this.adminProblemType[e];
+        this.problemType3.forEach((item) => {
+          item.name = item.name.replace(/u201c/g, "“");
+          item.name = item.name.replace(/u201d/g, "”");
+          item.name = item.name.replace(/u2014/g, "-");
+        });
       }
 
       if (e == "SELF" && this.admin.department_uuid2_type != "分局") {
@@ -603,7 +625,7 @@ export default {
           name: "",
         },
       ];
-
+      console.log(this.userList2);
       this.userList2.forEach((item) => {
         if (item.real_name.indexOf(query) != -1 && count <= 20) {
           this.personList2.push(item);
@@ -637,7 +659,8 @@ export default {
       this.form.type = "DEPARTMENT";
       this.form.from_lv2_department_uuid = this.admin.department_uuid2;
       this.form.to_lv2_department_uuid = this.form.to_uuid;
-
+      // this.form.content = this.form.content.replace(/&nbsp;/g, "");
+      console.log(this.form.content);
       if (this.form.to_uuid_person.length > 0) {
         this.form.responsible_uuids = this.form.to_uuid_person.join(";");
       }
